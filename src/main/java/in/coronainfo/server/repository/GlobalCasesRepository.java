@@ -7,6 +7,7 @@ import in.coronainfo.server.constants.EntityKind;
 import in.coronainfo.server.model.GlobalCases;
 
 import java.util.List;
+import java.util.Map;
 
 public class GlobalCasesRepository {
 
@@ -15,12 +16,16 @@ public class GlobalCasesRepository {
 
     private final KeyFactory keyFactory = datastore.newKeyFactory().setKind(EntityKind.GLOBAL_CASES.name());
 
+    public void addGlobalCases(GlobalCases globalCases) {
+        ObjectifyRegistry.ofy().save().entity(globalCases).now();
+    }
+
     public GlobalCases getByDate(String date) {
         return ObjectifyRegistry.ofy().load().type(GlobalCases.class).id(date).now();
     }
 
-    public void addGlobalCases(GlobalCases globalCases) {
-        ObjectifyRegistry.ofy().save().entity(globalCases).now();
+    public Map<String, GlobalCases> getByDates(String... dates) {
+        return ObjectifyRegistry.ofy().load().type(GlobalCases.class).ids(dates);
     }
 
     public List<GlobalCases> getAllGlobalCases() {
