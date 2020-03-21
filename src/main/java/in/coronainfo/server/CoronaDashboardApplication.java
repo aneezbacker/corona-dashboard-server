@@ -5,11 +5,8 @@ import com.google.cloud.datastore.DatastoreOptions;
 import com.googlecode.objectify.ObjectifyService;
 import in.coronainfo.server.repository.DataStoreEmulatorManager;
 import lombok.extern.log4j.Log4j2;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-
-import java.sql.DatabaseMetaData;
 
 @Log4j2
 @SpringBootApplication

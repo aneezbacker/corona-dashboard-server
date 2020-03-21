@@ -27,8 +27,9 @@ public class GlobalCasesService {
         return globalCasesRepository.getByDates(dateKeys);
     }
 
-    public void addGlobalCases(GlobalCases globalCases) {
+    public boolean addGlobalCases(GlobalCases globalCases) {
         globalCasesRepository.addGlobalCases(globalCases);
+        return  true;
     }
 
     public List<GlobalCases> getAllGlobalCase() {
@@ -55,6 +56,8 @@ public class GlobalCasesService {
         String today = DateTimeUtil.getTodayDateStr();
         String yesterday = DateTimeUtil.getYesterdayDateStr();
 
+        log.info("Date being considered for Global Summary data - today:{}, yesterday:{}", today, yesterday);
+
         // get data from datastore
         Map<String, GlobalCases> globalCases = getByDates(yesterday, today);
 
@@ -62,7 +65,7 @@ public class GlobalCasesService {
         GlobalCases gcYesterday = globalCases.get(yesterday);
 
         if (gcToday == null) {
-            log.error("No Global Cases data available for today. Will return null.");
+            log.error("No Global Cases data available for today. Will return null. today:{}", today);
             return null;
         }
 
@@ -73,7 +76,8 @@ public class GlobalCasesService {
         active = confirmed - cured - deaths;
 
         if (gcYesterday == null) {
-            log.error("No Global Cases data available for yesterday. Will return 0 for delta fields.");
+            log.error("No Global Cases data available for yesterday. Will return 0 for delta fields. yesterday:{}",
+                    yesterday);
         } else {
             // compute delta values
             confirmedDelta = confirmed - gcYesterday.getConfirmed();

@@ -12,16 +12,21 @@ public class JobRunnerService {
     @NonNull
     private SummaryFileGeneratorService summaryFileGeneratorService;
 
-    public void run(String jobName) {
+    public boolean run(String jobName) {
+        boolean result = false;
         log.info("Going to execute job. jobName:{}", jobName);
         switch (jobName) {
             case StringConstants.JOB_NAME.SUMMARY_GLOBAL_CASES:
-                summaryFileGeneratorService.generateGlobalCasesSummaryFile();
+                result = summaryFileGeneratorService.generateGlobalCasesSummaryFile();
+                break;
+            case StringConstants.JOB_NAME.SUMMARY_INDIA_CASES:
+                result = summaryFileGeneratorService.generateIndiaCasesSummaryFile();
                 break;
             default:
                 log.error("Unknown job name:{}", jobName);
         }
-        log.info("Finished executing job. jobName:{}", jobName);
+        log.info("Finished executing job. jobName:{}. result:{}", jobName, result);
+        return result;
     }
 
 

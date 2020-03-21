@@ -1,7 +1,9 @@
 package in.coronainfo.server.web.controller;
 
 import in.coronainfo.server.model.GlobalCases;
+import in.coronainfo.server.model.IndiaCases;
 import in.coronainfo.server.services.GlobalCasesService;
+import in.coronainfo.server.services.IndiaCasesService;
 import in.coronainfo.server.services.JobRunnerService;
 import lombok.Data;
 import lombok.NonNull;
@@ -18,6 +20,9 @@ public class AppController {
     private GlobalCasesService globalCasesService;
 
     @NonNull
+    private IndiaCasesService indiaCasesService;
+
+    @NonNull
     private JobRunnerService jobRunnerService;
 
 
@@ -29,19 +34,32 @@ public class AppController {
     }
 
     @PostMapping("/global-cases/add")
-    public void addGlobalCases(@RequestBody GlobalCases globalCases) {
+    public boolean addGlobalCases(@RequestBody GlobalCases globalCases) {
         log.info("Adding global cases. globalCases:{}", globalCases);
-        globalCasesService.addGlobalCases(globalCases);
-        log.info("Successfully added global cases. globalCases:{}", globalCases);
+        return globalCasesService.addGlobalCases(globalCases);
     }
     // ---------- Global Cases ENDS ----------
+
+    // ---------- India Cases STARTS ----------
+    @GetMapping("/india-cases/get")
+    public IndiaCases getIndiaCases(@RequestParam String date) {
+        log.info("Fetching india cases. date:{}", date);
+        return indiaCasesService.getByDate(date);
+    }
+
+    @PostMapping("/india-cases/add")
+    public boolean addIndiaCases(@RequestBody IndiaCases indiaCases) {
+        log.info("Adding india cases. indiaCases:{}", indiaCases);
+        return indiaCasesService.addIndiaCases(indiaCases);
+    }
+    // ---------- India Cases ENDS ----------
+
 
     // ---------- Jobs STARTS ----------
     @GetMapping("/jobs/run")
     public boolean runJobs(@RequestParam String jobName) {
         log.info("Going to run job. jobName:{}", jobName);
-        jobRunnerService.run(jobName);
-        return true;
+        return jobRunnerService.run(jobName);
     }
     // ---------- Jobs ENDS ----------
 

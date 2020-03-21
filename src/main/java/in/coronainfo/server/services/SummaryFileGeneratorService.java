@@ -3,13 +3,19 @@ package in.coronainfo.server.services;
 import com.google.gson.Gson;
 import in.coronainfo.server.constants.StringConstants;
 import in.coronainfo.server.model.GlobalCasesSummary;
+import in.coronainfo.server.model.IndiaCasesSummary;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 
+import javax.security.auth.login.FailedLoginException;
+
 @Log4j2
 @RequiredArgsConstructor
 public class SummaryFileGeneratorService {
+
+    @NonNull
+    private GoogleCloudStorageService gcsService;
 
     @NonNull
     private FileUtilService fileUtilService;
@@ -18,22 +24,24 @@ public class SummaryFileGeneratorService {
     private GlobalCasesService globalCasesService;
 
     @NonNull
-    private GoogleCloudStorageService gcsService;
+    private IndiaCasesService indiaCasesService;
 
     private Gson gson = new Gson();
 
-    public void generateGlobalCasesSummaryFile() {
-        log.info("Going to create Global Cases summary file.");
-
+    public boolean generateGlobalCasesSummaryFile() {
         String filePath = StringConstants.FILE_NAME.GLOBAL_CASES_SUMMARY;
-
-        log.info("Going to create Global Cases summary file.");
+        boolean result = false;
 
         try {
             // get data from GlobalCasesService
             log.info("Going to create Global Cases summary data.");
             GlobalCasesSummary gcSummary = globalCasesService.getGlobalCasesSummaryData();
             log.info("Created Global Cases summary data. gcSummary:{}", gcSummary);
+
+            if (gcSummary == null) {
+                log.error("Failed to fetch Global Cases summary");
+                return false;
+            }
 
             // create json file
             log.info("Going to create Global Cases summary json file.");
@@ -46,9 +54,44 @@ public class SummaryFileGeneratorService {
             log.info("Successfully uploaded Global Cases summary json file to GCS bucket");
 
             log.info("Finished creating Global Cases summary file.");
+            result = true;
         } catch (Exception e) {
             log.error("Exception occurred while creating Global Cases Summary file.", e);
         }
+        return result;
     }
 
+    public boolean generateIndiaCasesSummaryFile() {
+        String filePath = StringConstants.FILE_NAME.INDIA_CASES_SUMMARY;
+        boolean result = false;
+
+        try {
+            // get data from IndiaCasesService
+            log.info("Going to create India Cases summary data.");
+            IndiaCasesSummary icSummary = indiaCasesService.getIndiaCasesSummaryData();
+            log.info("Created India Cases summary data. icSummary:{}", icSummary);
+
+            if (icSummary == null) {
+                log.error("Failed to fetch India Cases summary");
+                return false;
+            }
+
+            // create json file
+            log.info("Going to create India Cases summary json file.");
+            fileUtilService.createJsonFile(IndiaCasesSummary.class, icSummary, filePath);
+            log.info("Finished creating India Cases summary json file. filePath:{}", filePath);
+
+            // upload file to Google Cloud Storage bucket
+            log.info("Upload India Cases summary json file to GCS bucket");
+            gcsService.uploadFile(filePath, StringConstants.CDN_FILE_NAME.INDIA_CASES_SUMMARY);
+            log.info("Successfully uploaded India Cases summary json file to GCS bucket");
+
+            log.info("Finished creating India Cases summary file.");
+
+            result = true;
+        } catch (Exception e) {
+            log.error("Exception occurred while creating India Cases Summary file.", e);
+        }
+        return result;
+    }
 }
