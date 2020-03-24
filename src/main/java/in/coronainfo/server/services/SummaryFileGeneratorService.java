@@ -4,6 +4,7 @@ import com.google.gson.Gson;
 import in.coronainfo.server.constants.StringConstants;
 import in.coronainfo.server.model.GlobalCasesSummary;
 import in.coronainfo.server.model.IndiaCasesSummary;
+import in.coronainfo.server.model.SnackBarMessage;
 import in.coronainfo.server.model.StateWiseCasesSummary;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
@@ -30,6 +31,10 @@ public class SummaryFileGeneratorService {
     @NonNull
     private StateWiseCasesService stateWiseCasesService;
 
+    @NonNull
+    private SnackBarMessageService snackBarMessageService;
+
+
     private Gson gson = new Gson();
 
     public boolean generateGlobalCasesSummaryFile() {
@@ -53,7 +58,7 @@ public class SummaryFileGeneratorService {
             log.info("Finished creating Global Cases summary json file. filePath:{}", filePath);
 
             // upload file to Google Cloud Storage bucket
-            log.info("Upload file to Global Cases summary json file to GCS bucket");
+            log.info("Upload Global Cases summary json file to GCS bucket");
             gcsService.uploadFile(filePath, StringConstants.CDN_FILE_NAME.GLOBAL_CASES_SUMMARY);
             log.info("Successfully uploaded Global Cases summary json file to GCS bucket");
 
@@ -120,7 +125,7 @@ public class SummaryFileGeneratorService {
             log.info("Finished creating State Wise Cases summary json file. filePath:{}", filePath);
 
             // upload file to Google Cloud Storage bucket
-            log.info("Upload file to State Wise Cases summary json file to GCS bucket");
+            log.info("Upload State Wise Cases summary json file to GCS bucket");
             gcsService.uploadFile(filePath, StringConstants.CDN_FILE_NAME.STATE_WISE_CASES_SUMMARY);
             log.info("Successfully uploaded State Wise Cases summary json file to GCS bucket");
 
@@ -131,4 +136,38 @@ public class SummaryFileGeneratorService {
         }
         return result;
     }
+
+    public boolean generateSnackBarMessageFile() {
+        String filePath = StringConstants.FILE_NAME.SNACK_BAR_MESSAGE;
+        boolean result = false;
+
+        try {
+            // get data from SnackBarMessageService
+            log.info("Going to create Snack Bar Message data.");
+            SnackBarMessage snackBarMessage = snackBarMessageService.getById("1");
+            log.info("Created Snack Bar Message data. snackBarMessage:{}", snackBarMessage);
+
+            if (snackBarMessage == null) {
+                log.error("Failed to fetch Snack Bar Message data");
+                return false;
+            }
+
+            // create json file
+            log.info("Going to create Snack Bar Message json file.");
+            fileUtilService.createJsonFile(SnackBarMessage.class, snackBarMessage, filePath);
+            log.info("Finished creating Snack Bar Message json file. filePath:{}", filePath);
+
+            // upload file to Google Cloud Storage bucket
+            log.info("Upload Snack Bar Message json file to GCS bucket");
+            gcsService.uploadFile(filePath, StringConstants.CDN_FILE_NAME.SNACK_BAR_MESSAGE);
+            log.info("Successfully uploaded Snack Bar Message json file to GCS bucket");
+
+            log.info("Finished creating Snack Bar Message file.");
+            result = true;
+        } catch (Exception e) {
+            log.error("Exception occurred while creating Snack Bar Message file.", e);
+        }
+        return result;
+    }
+
 }

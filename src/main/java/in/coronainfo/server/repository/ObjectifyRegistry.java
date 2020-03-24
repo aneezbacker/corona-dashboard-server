@@ -4,6 +4,7 @@ import com.googlecode.objectify.Objectify;
 import com.googlecode.objectify.ObjectifyService;
 import in.coronainfo.server.model.GlobalCases;
 import in.coronainfo.server.model.IndiaCases;
+import in.coronainfo.server.model.SnackBarMessage;
 import in.coronainfo.server.model.StateWiseCases;
 
 public class ObjectifyRegistry {
@@ -13,6 +14,7 @@ public class ObjectifyRegistry {
         ObjectifyService.register(GlobalCases.class);
         ObjectifyService.register(IndiaCases.class);
         ObjectifyService.register(StateWiseCases.class);
+        ObjectifyService.register(SnackBarMessage.class);
     }
 
     public static Objectify ofy() {

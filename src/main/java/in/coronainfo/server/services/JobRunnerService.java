@@ -25,6 +25,9 @@ public class JobRunnerService {
             case StringConstants.JOB_NAME.SUMMARY_STATE_WISE_CASES:
                 result = summaryFileGeneratorService.generateStateWiseCasesSummaryFile();
                 break;
+            case StringConstants.JOB_NAME.SNACK_BAR_MESSAGE:
+                result = summaryFileGeneratorService.generateSnackBarMessageFile();
+                break;
             default:
                 log.error("Unknown job name:{}", jobName);
         }

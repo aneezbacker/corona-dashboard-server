@@ -3,7 +3,8 @@ package in.coronainfo.server.constants;
 public enum EntityKind {
     GLOBAL_CASES("GlobalCases"),
     INDIA_CASES("GlobalCases"),
-    STATE_WISE_CASES("StateWiseCases");
+    STATE_WISE_CASES("StateWiseCases"),
+    SNACK_BAR_MESSAGES("SnackBar");
 
     private final String kind;
 

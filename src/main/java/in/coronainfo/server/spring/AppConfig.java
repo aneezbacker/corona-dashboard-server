@@ -2,6 +2,7 @@ package in.coronainfo.server.spring;
 
 import in.coronainfo.server.repository.GlobalCasesRepository;
 import in.coronainfo.server.repository.IndiaCasesRepository;
+import in.coronainfo.server.repository.SnackBarMessageRepository;
 import in.coronainfo.server.repository.StateWiseCasesRepository;
 import in.coronainfo.server.services.*;
 import org.springframework.context.annotation.Bean;
@@ -46,6 +47,17 @@ public class AppConfig {
     }
 
     @Bean
+    public SnackBarMessageRepository snackBarRepository() {
+        return new SnackBarMessageRepository();
+    }
+
+    @Bean
+    public SnackBarMessageService snackBarService(SnackBarMessageRepository snackBarMessageRepository) {
+        return new SnackBarMessageService(snackBarMessageRepository);
+    }
+
+
+    @Bean
     public GoogleCloudStorageService gcsService() {
         return new GoogleCloudStorageService();
     }
@@ -55,9 +67,10 @@ public class AppConfig {
                                                                    FileUtilService fileUtilService,
                                                                    GlobalCasesService globalCasesService,
                                                                    IndiaCasesService indiaCasesService,
-                                                                   StateWiseCasesService stateWiseCasesService) {
+                                                                   StateWiseCasesService stateWiseCasesService,
+                                                                   SnackBarMessageService snackBarService) {
         return new SummaryFileGeneratorService(gcsService, fileUtilService, globalCasesService, indiaCasesService,
-                stateWiseCasesService);
+                stateWiseCasesService, snackBarService);
     }
 
     @Bean

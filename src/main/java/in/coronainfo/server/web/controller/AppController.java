@@ -2,11 +2,9 @@ package in.coronainfo.server.web.controller;
 
 import in.coronainfo.server.model.GlobalCases;
 import in.coronainfo.server.model.IndiaCases;
+import in.coronainfo.server.model.SnackBarMessage;
 import in.coronainfo.server.model.StateWiseCases;
-import in.coronainfo.server.services.GlobalCasesService;
-import in.coronainfo.server.services.IndiaCasesService;
-import in.coronainfo.server.services.JobRunnerService;
-import in.coronainfo.server.services.StateWiseCasesService;
+import in.coronainfo.server.services.*;
 import lombok.Data;
 import lombok.NonNull;
 import lombok.extern.log4j.Log4j2;
@@ -30,6 +28,8 @@ public class AppController {
     @NonNull
     private JobRunnerService jobRunnerService;
 
+    @NonNull
+    private SnackBarMessageService snackBarMessageService;
 
     // ---------- Global Cases STARTS ----------
     @GetMapping("/global-cases/get")
@@ -82,4 +82,17 @@ public class AppController {
     }
     // ---------- Jobs ENDS ----------
 
+    // ---------- SnackBar Message STARTS ----------
+    @GetMapping("/snack-bar-message/get")
+    public SnackBarMessage getSnackBarMessage(@RequestParam String id) {
+        log.info("Fetching snackbar message. id:{}", id);
+        return snackBarMessageService.getById(id);
+    }
+
+    @PostMapping("/snack-bar-message/add")
+    public boolean addSnackBarMessage(@RequestBody SnackBarMessage snackBarMessage) {
+        log.info("Adding snack bar message. snackBarMessage:{}", snackBarMessage);
+        return snackBarMessageService.addSnackBarMessage(snackBarMessage);
+    }
+    // ---------- SnackBar Message ENDS ----------
 }
