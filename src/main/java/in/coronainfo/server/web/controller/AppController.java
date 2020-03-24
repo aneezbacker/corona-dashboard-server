@@ -2,9 +2,11 @@ package in.coronainfo.server.web.controller;
 
 import in.coronainfo.server.model.GlobalCases;
 import in.coronainfo.server.model.IndiaCases;
+import in.coronainfo.server.model.StateWiseCases;
 import in.coronainfo.server.services.GlobalCasesService;
 import in.coronainfo.server.services.IndiaCasesService;
 import in.coronainfo.server.services.JobRunnerService;
+import in.coronainfo.server.services.StateWiseCasesService;
 import lombok.Data;
 import lombok.NonNull;
 import lombok.extern.log4j.Log4j2;
@@ -21,6 +23,9 @@ public class AppController {
 
     @NonNull
     private IndiaCasesService indiaCasesService;
+
+    @NonNull
+    private StateWiseCasesService stateWiseCasesService;
 
     @NonNull
     private JobRunnerService jobRunnerService;
@@ -54,6 +59,20 @@ public class AppController {
     }
     // ---------- India Cases ENDS ----------
 
+
+    // ---------- StateWise Cases STARTS ----------
+    @GetMapping("/statewise-cases/get")
+    public StateWiseCases getStateWiseCases(@RequestParam String date) {
+        log.info("Fetching stateWise cases. date:{}", date);
+        return stateWiseCasesService.getByDate(date);
+    }
+
+    @PostMapping("/statewise-cases/add")
+    public boolean addStatewiseCases(@RequestBody StateWiseCases statewiseCases) {
+        log.info("Adding statewise cases. statewiseCases:{}", statewiseCases);
+        return stateWiseCasesService.addStateWiseCases(statewiseCases);
+    }
+    // ---------- StateWise Cases ENDS ----------
 
     // ---------- Jobs STARTS ----------
     @GetMapping("/jobs/run")

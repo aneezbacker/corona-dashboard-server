@@ -22,6 +22,9 @@ public class JobRunnerService {
             case StringConstants.JOB_NAME.SUMMARY_INDIA_CASES:
                 result = summaryFileGeneratorService.generateIndiaCasesSummaryFile();
                 break;
+            case StringConstants.JOB_NAME.SUMMARY_STATE_WISE_CASES:
+                result = summaryFileGeneratorService.generateStateWiseCasesSummaryFile();
+                break;
             default:
                 log.error("Unknown job name:{}", jobName);
         }

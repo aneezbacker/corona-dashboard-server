@@ -2,6 +2,7 @@ package in.coronainfo.server.spring;
 
 import in.coronainfo.server.repository.GlobalCasesRepository;
 import in.coronainfo.server.repository.IndiaCasesRepository;
+import in.coronainfo.server.repository.StateWiseCasesRepository;
 import in.coronainfo.server.services.*;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -35,6 +36,16 @@ public class AppConfig {
     }
 
     @Bean
+    public StateWiseCasesRepository stateWiseCasesRepository() {
+        return new StateWiseCasesRepository();
+    }
+
+    @Bean
+    public StateWiseCasesService stateWiseCasesService(StateWiseCasesRepository stateWiseCasesRepository) {
+        return new StateWiseCasesService(stateWiseCasesRepository);
+    }
+
+    @Bean
     public GoogleCloudStorageService gcsService() {
         return new GoogleCloudStorageService();
     }
@@ -43,8 +54,10 @@ public class AppConfig {
     public SummaryFileGeneratorService summaryFileGeneratorService(GoogleCloudStorageService gcsService,
                                                                    FileUtilService fileUtilService,
                                                                    GlobalCasesService globalCasesService,
-                                                                   IndiaCasesService indiaCasesService) {
-        return new SummaryFileGeneratorService(gcsService, fileUtilService, globalCasesService, indiaCasesService);
+                                                                   IndiaCasesService indiaCasesService,
+                                                                   StateWiseCasesService stateWiseCasesService) {
+        return new SummaryFileGeneratorService(gcsService, fileUtilService, globalCasesService, indiaCasesService,
+                stateWiseCasesService);
     }
 
     @Bean

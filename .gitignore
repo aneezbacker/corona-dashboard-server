@@ -31,3 +31,4 @@ build/
 .vscode/
 globalCasesSummary.json
 indiaCasesSummary.json
+stateWiseCasesSummary.json

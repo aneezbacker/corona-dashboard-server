@@ -4,6 +4,7 @@ import com.google.gson.Gson;
 import in.coronainfo.server.constants.StringConstants;
 import in.coronainfo.server.model.GlobalCasesSummary;
 import in.coronainfo.server.model.IndiaCasesSummary;
+import in.coronainfo.server.model.StateWiseCasesSummary;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
@@ -25,6 +26,9 @@ public class SummaryFileGeneratorService {
 
     @NonNull
     private IndiaCasesService indiaCasesService;
+
+    @NonNull
+    private StateWiseCasesService stateWiseCasesService;
 
     private Gson gson = new Gson();
 
@@ -91,6 +95,39 @@ public class SummaryFileGeneratorService {
             result = true;
         } catch (Exception e) {
             log.error("Exception occurred while creating India Cases Summary file.", e);
+        }
+        return result;
+    }
+
+    public boolean generateStateWiseCasesSummaryFile() {
+        String filePath = StringConstants.FILE_NAME.STATE_WISE_CASES_SUMMARY;
+        boolean result = false;
+
+        try {
+            // get data from StateWiseCasesService
+            log.info("Going to create State Wise Cases summary data.");
+            StateWiseCasesSummary swcSummary = stateWiseCasesService.getStateWiseCasesSummaryData();
+            log.info("Created State Wise Cases summary data. swcSummary:{}", swcSummary);
+
+            if (swcSummary == null) {
+                log.error("Failed to fetch State Wise Cases summary");
+                return false;
+            }
+
+            // create json file
+            log.info("Going to create State Wise Cases summary json file.");
+            fileUtilService.createJsonFile(StateWiseCasesSummary.class, swcSummary, filePath);
+            log.info("Finished creating State Wise Cases summary json file. filePath:{}", filePath);
+
+            // upload file to Google Cloud Storage bucket
+            log.info("Upload file to State Wise Cases summary json file to GCS bucket");
+            gcsService.uploadFile(filePath, StringConstants.CDN_FILE_NAME.STATE_WISE_CASES_SUMMARY);
+            log.info("Successfully uploaded State Wise Cases summary json file to GCS bucket");
+
+            log.info("Finished creating State Wise Cases summary file.");
+            result = true;
+        } catch (Exception e) {
+            log.error("Exception occurred while creating State Wise Cases Summary file.", e);
         }
         return result;
     }
