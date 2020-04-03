@@ -3,7 +3,6 @@ package in.coronainfo.server.repository;
 import com.google.cloud.datastore.DatastoreOptions;
 import com.googlecode.objectify.ObjectifyFactory;
 import com.googlecode.objectify.ObjectifyService;
-import org.springframework.beans.factory.annotation.Value;
 
 public class DataStoreEmulatorManager {
     public static void initDataStoreEmulator() {
