@@ -21,4 +21,4 @@ FROM adoptopenjdk/openjdk8:jdk8u202-b08-alpine-slim
 COPY --from=builder /app/target/corona-dashboard-server-*.jar /corona-dashboard-server.jar
 
 # Run the web service on container startup.
-CMD ["java","-Djava.security.egd=file:/dev/./urandom","-Dserver.port=${PORT}","-Dspring.profiles.active=prd","-jar","/corona-dashboard-server.jar"]
+CMD ["java","-Xms1800M","-Xmx2048M","-Djava.security.egd=file:/dev/./urandom","-Dhttps.protocols=TLSv1.2,TLSv1.1,TLSv1,SSLv3","-Dserver.port=${PORT}","-Dspring.profiles.active=prd","-jar","/corona-dashboard-server.jar"]"-Xmx2048m"

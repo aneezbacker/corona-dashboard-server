@@ -3,10 +3,13 @@ package in.coronainfo.server.htmlparser;
 import in.coronainfo.server.model.GlobalCases;
 import in.coronainfo.server.util.DateTimeUtil;
 import lombok.extern.log4j.Log4j2;
-import org.jsoup.Jsoup;
-import org.jsoup.nodes.Document;
-import org.jsoup.nodes.Element;
-import org.jsoup.select.Elements;
+import org.openqa.selenium.By;
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
+import org.openqa.selenium.htmlunit.HtmlUnitDriver;
+
+import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 
 @Log4j2
@@ -20,33 +23,41 @@ public class WomParser {
         int deaths = 0;
         int cured = 0;
 
+        WebDriver driver = null;
         try {
-            Document doc = Jsoup.connect(GLOBAL_DATA_URL).get();
-            Elements divElements = doc.getElementsByClass("maincounter-number");
+            driver = new HtmlUnitDriver();
+            driver.manage().timeouts().pageLoadTimeout(10, TimeUnit.MINUTES);
+
+            log.info("Going to get data from WoM. GLOBAL_DATA_URL:{}", GLOBAL_DATA_URL);
+            driver.get(GLOBAL_DATA_URL);
+            log.info("Loaded GLOBAL_DATA_URL:{}. Going to parse html", GLOBAL_DATA_URL);
+
+            List<WebElement> elementList = driver.findElements(By.className("maincounter-number"));
 
             // confirmed cases
-            Element confirmedDivElem = divElements.get(0);  // confirmed cases div
-            Element confirmedSpanElem = confirmedDivElem.getElementsByTag("span").get(0);
-            String confirmedStr = confirmedSpanElem.text();
+            String confirmedStr = elementList.get(0).findElement(By.tagName("span")).getText();
             confirmed = Integer.parseInt(confirmedStr.replace(",", ""));
 
             // deaths cases
-            Element deathsDivElem = divElements.get(1);  // deaths cases div
-            Element deathsSpanElement = deathsDivElem.getElementsByTag("span").get(0);
-            String deathsStr = deathsSpanElement.text();
+            String deathsStr = elementList.get(1).findElement(By.tagName("span")).getText();
             deaths = Integer.parseInt(deathsStr.replace(",", ""));
 
             // cured cases
-            Element curedDivElem = divElements.get(2);  // cured cases div
-            Element curedSpanElement = curedDivElem.getElementsByTag("span").get(0);
-            String curedStr = curedSpanElement.text();
+            String curedStr = elementList.get(2).findElement(By.tagName("span")).getText();
             cured = Integer.parseInt(curedStr.replace(",", ""));
 
             globalCases =
                     GlobalCases.builder().date(date).confirmed(confirmed).deaths(deaths).cured(cured).build();
 
+            log.info("Parsed html successfully. globalCases:{}", globalCases);
+
         } catch (Exception e) {
-            log.error("Exception occurred while getting Global Cases data. GLOBAL_DATA_URL:{}", GLOBAL_DATA_URL, e);
+            log.error("Exception occurred while getting Global Cases data. GLOBAL_DATA_URL:{}, {}", GLOBAL_DATA_URL, e);
+            e.printStackTrace();
+        } finally {
+            if (driver != null) {
+                driver.quit();
+            }
         }
 
         return globalCases;

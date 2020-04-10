@@ -64,7 +64,7 @@ public class StateWiseCasesService {
 
         Map<String, StateCasesSummary> scSummaryMap = new HashMap<>();
         Map<String, StateCases> scMapToday = swcToday.getStateCasesMap();
-        Map<String, StateCases> scMapYest = swcYest.getStateCasesMap();
+        Map<String, StateCases> scMapYest = swcYest != null ? swcYest.getStateCasesMap() : null;
 
         // set Today's data
         for (String state : scMapToday.keySet()) {
@@ -74,44 +74,24 @@ public class StateWiseCasesService {
 
             scSummary.setState(state);
 
-            scSummary.setConfirmedIndia(scToday.getConfirmedIndia());
-            scSummary.setConfirmedForeign(scToday.getConfirmedForeign());
-            scSummary.setConfirmedTotal(scToday.getConfirmedIndia() + scToday.getConfirmedForeign());
+            scSummary.setConfirmed(scToday.getConfirmed());
+            scSummary.setDeaths(scToday.getDeaths());
+            scSummary.setCured(scToday.getCured());
+            scSummary.setActive(scToday.getConfirmed() - scToday.getCured() - scToday.getDeaths());
 
-            scSummary.setDeathsIndia(scToday.getDeathsIndia());
-            scSummary.setDeathsForeign(scToday.getDeathsForeign());
-            scSummary.setDeathsTotal(scToday.getDeathsIndia() + scToday.getDeathsForeign());
-
-            scSummary.setCuredIndia(scToday.getCuredIndia());
-            scSummary.setCuredForeign(scToday.getCuredForeign());
-            scSummary.setCuredTotal(scToday.getCuredIndia() + scToday.getCuredForeign());
-
-            scSummary.setActiveIndia(scToday.getConfirmedIndia() - scToday.getCuredIndia() - scToday.getDeathsIndia());
-            scSummary.setActiveForeign(scToday.getConfirmedForeign() - scToday.getCuredForeign() - scToday.getDeathsForeign());
-            scSummary.setActiveTotal(scSummary.getActiveIndia() + scSummary.getActiveForeign());
-
-            StateCases scYesterday = scMapYest.get(state);
+            StateCases scYesterday = scMapYest != null ? scMapYest.get(state) : null;
             if (scYesterday == null) {
                 log.error("Missing States data for yesterday.  yesterday:{}. state:{}", yesterday, state);
-                continue;
+                scSummary.setConfirmedDelta(0);
+                scSummary.setDeathsDelta(0);
+                scSummary.setCuredDelta(0);
+                scSummary.setActiveDelta(0);
+            } else {
+                scSummary.setConfirmedDelta(scToday.getConfirmed() - scYesterday.getConfirmed());
+                scSummary.setDeathsDelta(scToday.getDeaths() - scYesterday.getDeaths());
+                scSummary.setCuredDelta(scToday.getCured() - scYesterday.getCured());
+                scSummary.setActiveDelta(scSummary.getConfirmedDelta() - scSummary.getDeathsDelta() - scSummary.getCuredDelta());
             }
-
-            scSummary.setConfirmedIndiaDelta(scToday.getConfirmedIndia() - scYesterday.getConfirmedIndia());
-            scSummary.setConfirmedForeignDelta(scToday.getConfirmedForeign() - scYesterday.getConfirmedForeign());
-            scSummary.setConfirmedTotalDelta(scSummary.getConfirmedIndiaDelta() + scSummary.getConfirmedForeignDelta());
-
-            scSummary.setDeathsIndiaDelta(scToday.getDeathsIndia() - scYesterday.getDeathsIndia());
-            scSummary.setDeathsForeignDelta(scToday.getDeathsForeign() - scYesterday.getDeathsForeign());
-            scSummary.setDeathsTotalDelta(scSummary.getDeathsIndiaDelta() + scSummary.getDeathsForeignDelta());
-
-            scSummary.setCuredIndiaDelta(scToday.getCuredIndia() - scYesterday.getCuredIndia());
-            scSummary.setCuredForeignDelta(scToday.getCuredForeign() - scYesterday.getCuredForeign());
-            scSummary.setCuredTotalDelta(scSummary.getCuredIndiaDelta() + scSummary.getCuredForeignDelta());
-
-            scSummary.setActiveIndiaDelta(scSummary.getConfirmedIndiaDelta() - scSummary.getDeathsIndiaDelta() - scSummary.getCuredIndiaDelta());
-            scSummary.setActiveForeignDelta(scSummary.getConfirmedForeignDelta() - scSummary.getDeathsForeignDelta() - scSummary.getCuredForeignDelta());
-            scSummary.setActiveTotalDelta(scSummary.getActiveIndiaDelta() + scSummary.getActiveForeignDelta());
-
             scSummaryMap.put(state, scSummary);
         }
 

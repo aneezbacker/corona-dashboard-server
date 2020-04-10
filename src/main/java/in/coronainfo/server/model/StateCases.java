@@ -10,10 +10,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class StateCases {
-    int confirmedIndia;
-    int confirmedForeign;
-    int curedIndia;
-    int curedForeign;
-    int deathsIndia;
-    int deathsForeign;
+    int confirmed;
+    int cured;
+    int deaths;
 }

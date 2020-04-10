@@ -1,5 +1,6 @@
 package in.coronainfo.server.spring;
 
+import in.coronainfo.server.htmlparser.MohfwParser;
 import in.coronainfo.server.htmlparser.WomParser;
 import in.coronainfo.server.repository.GlobalCasesRepository;
 import in.coronainfo.server.repository.IndiaCasesRepository;
@@ -86,9 +87,17 @@ public class AppConfig {
     }
 
     @Bean
-    public DataUpdateJob dataUpdateJob(WomParser womParser, GlobalCasesService globalCasesService,
+    public MohfwParser mohfwParser() {
+        return new MohfwParser();
+    }
+
+    @Bean
+    public DataUpdateJob dataUpdateJob(WomParser womParser, MohfwParser mohfwParser,
+                                       GlobalCasesService globalCasesService, IndiaCasesService indiaCasesService,
+                                       StateWiseCasesService stateWiseCasesService,
                                        SummaryFileGeneratorService summaryFileGeneratorService) {
-        return new DataUpdateJob(womParser, globalCasesService, summaryFileGeneratorService);
+        return new DataUpdateJob(womParser, mohfwParser, globalCasesService, indiaCasesService, stateWiseCasesService,
+                summaryFileGeneratorService);
     }
 
     @Bean
