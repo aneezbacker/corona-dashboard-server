@@ -106,7 +106,7 @@ public class MohfwParser {
             WebElement stateElem = driver.findElement(By.xpath("//section[@id='state-data']//tbody"));
             List<WebElement> rowElemList = stateElem.findElements(By.tagName("tr"));
 
-            for (int i = 0; i < rowElemList.size() - 2; i++) {
+            for (int i = 0; i < rowElemList.size() -5; i++) {
                 WebElement trElem = rowElemList.get(i);
                 List<WebElement> columnElemList = trElem.findElements(By.tagName("td"));
 
@@ -115,9 +115,9 @@ public class MohfwParser {
                 String curedStr = columnElemList.get(3).getText();
                 String deathsStr = columnElemList.get(4).getText();
 
-                int active = Integer.parseInt(activeStr.replace(",", ""));
-                int cured = Integer.parseInt(curedStr.replace(",", ""));
-                int deaths = Integer.parseInt(deathsStr.replace(",", ""));
+                int active = Integer.parseInt(activeStr.replace(",", "").replace("#","" ));
+                int cured = Integer.parseInt(curedStr.replace(",", "").replace("#","" ));
+                int deaths = Integer.parseInt(deathsStr.replace(",", "").replace("#","" ));
 
                 int confirmed = active + cured + deaths;
 
