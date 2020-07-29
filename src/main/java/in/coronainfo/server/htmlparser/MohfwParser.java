@@ -14,6 +14,7 @@ import org.openqa.selenium.htmlunit.HtmlUnitDriver;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 @Log4j2
 public class MohfwParser {
@@ -28,7 +29,7 @@ public class MohfwParser {
 
         WebDriver driver = null;
         try {
-            driver = new HtmlUnitDriver();
+            driver = new HtmlUnitDriver(true);
 
             log.info("Going to load INDIA_DATA_URL:{}", INDIA_DATA_URL);
 
@@ -65,20 +66,23 @@ public class MohfwParser {
         int active = 0;
 
         try {
-            // active cases
-            WebElement activeElem = driver.findElement(By.xpath("//div[@class='site-stats-count']/ul/li[1]/strong"));
+            // active cases (<div class="col-xs-8 site-stats-count">)
+            WebElement activeElem = driver.findElement(By.xpath("//div[@class='col-xs-8 " +
+                    "site-stats-count']/ul/li[1]/strong[2]"));
             String activeStr = activeElem.getText();
-            active = Integer.parseInt(activeStr.replace(",", ""));
+            active = Integer.parseInt(activeStr.replace(",", "").substring(0, activeStr.indexOf(' ')));
 
             // cured cases
-            WebElement curedElem = driver.findElement(By.xpath("//div[@class='site-stats-count']/ul/li[2]/strong"));
+            WebElement curedElem = driver.findElement(By.xpath("//div[@class='col-xs-8 " +
+                    "site-stats-count']/ul/li[2]/strong[2]"));
             String curedStr = curedElem.getText();
-            cured = Integer.parseInt(curedStr.replace(",", ""));
+            cured = Integer.parseInt(curedStr.replace(",", "").substring(0, curedStr.indexOf(' ')));
 
             // deaths cases
-            WebElement deathsElem = driver.findElement(By.xpath("//div[@class='site-stats-count']/ul/li[3]/strong"));
+            WebElement deathsElem = driver.findElement(By.xpath("//div[@class='col-xs-8 " +
+                    "site-stats-count']/ul/li[3]/strong[2]"));
             String deathsStr = deathsElem.getText();
-            deaths = Integer.parseInt(deathsStr.replace(",", ""));
+            deaths = Integer.parseInt(deathsStr.replace(",", "").substring(0, deathsStr.indexOf(' ')));
 
             confirmed = active + cured + deaths;
 
@@ -102,22 +106,29 @@ public class MohfwParser {
         Map<String, StateCases> stateCasesMap = new HashMap<>();
 
         try {
-            // rows
-            WebElement stateElem = driver.findElement(By.xpath("//section[@id='state-data']//tbody"));
+            WebElement clickLink = driver.findElement(By.xpath("//a[@class='open-table']"));
+            clickLink.click();
+
+            log.info("Going to wait for 2 seconds");
+            driver.manage().timeouts().implicitlyWait(5, TimeUnit.SECONDS);
+            log.info("Finished waiting for 2 seconds");
+
+            WebElement stateElem = driver.findElement(By.xpath("//table[@class='statetable table " +
+                    "table-striped']/tbody"));
             List<WebElement> rowElemList = stateElem.findElements(By.tagName("tr"));
 
-            for (int i = 0; i < rowElemList.size() -5; i++) {
+            for (int i = 0; i < rowElemList.size() - 6; i++) {
                 WebElement trElem = rowElemList.get(i);
                 List<WebElement> columnElemList = trElem.findElements(By.tagName("td"));
 
-                String state = columnElemList.get(1).getText().trim();
+                String state = columnElemList.get(1).getText().trim().replaceAll("[-+.^:,*]", "");
                 String activeStr = columnElemList.get(2).getText();
-                String curedStr = columnElemList.get(3).getText();
-                String deathsStr = columnElemList.get(4).getText();
+                String curedStr = columnElemList.get(4).getText();
+                String deathsStr = columnElemList.get(6).getText();
 
-                int active = Integer.parseInt(activeStr.replace(",", "").replace("#","" ));
-                int cured = Integer.parseInt(curedStr.replace(",", "").replace("#","" ));
-                int deaths = Integer.parseInt(deathsStr.replace(",", "").replace("#","" ));
+                int active = Integer.parseInt(activeStr.replace(",", "").replace("#", ""));
+                int cured = Integer.parseInt(curedStr.replace(",", "").replace("#", ""));
+                int deaths = Integer.parseInt(deathsStr.replace(",", "").replace("#", ""));
 
                 int confirmed = active + cured + deaths;
 

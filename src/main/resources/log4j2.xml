@@ -21,6 +21,9 @@
             <AppenderRef ref="FileAppender"/>
         </Logger>
 
+        <Logger name="com.gargoylesoftware" level="OFF" additivity="false">
+        </Logger>
+
         <Root level="INFO">
             <AppenderRef ref="ConsoleAppender"/>
             <AppenderRef ref="FileAppender"/>

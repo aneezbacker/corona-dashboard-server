@@ -16,7 +16,7 @@ public class JobScheduler {
 
     // run every 15 mins with initial delay of 30s
     //@Scheduled(fixedDelay = 120000, initialDelay = 5000)
-    @Scheduled(fixedDelay = 900000, initialDelay = 30000)
+    @Scheduled(fixedDelay = 120000, initialDelay = 5000)
     public void indiaDataSchJob() {
         log.info("Going to run India data job");
 
@@ -31,7 +31,7 @@ public class JobScheduler {
 
     // run every 15 mins with initial delay of 1 min
     //@Scheduled(fixedDelay = 120000, initialDelay = 30000)
-    @Scheduled(fixedDelay = 900000, initialDelay = 60000)
+    @Scheduled(fixedDelay = 120000, initialDelay = 60000)
     public void globalCasesSchJob() {
         log.info("Going to run global cases job");
 
